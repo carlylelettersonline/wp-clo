@@ -483,7 +483,7 @@ class PhotoAlbum {
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/PhotoAlbum/`,
             'GET',
-            {'only': 'title,album_no,description'},
+            {'s_album_no': 'asc', 'only': 'title,album_no,description'},
             function (albums) {
                 if (albums.hasOwnProperty('records') && albums.records.length) {
                     let html = '<div class="container mt-5"><div class="row"><div class="col-sm-6">';
