@@ -4,15 +4,30 @@ class CarlyleLettersOnline {
         this.token = corpora_token;
         this.corpus_id = clo_corpus_id;
         this.site_header = null;
+        this.site_footer = null;
+        this.homepage_widget = null;
         this.volume_batch_widget = null;
         this.volume_viewer_widget = null;
         this.photo_album_widget = null;
         this.album_viewer_widget = null;
+        this.search_results_widget = null;
 
         // rig up the site header
         let clo_site_header = jQuery('#clo-header-div');
         if (clo_site_header.length) {
             this.site_header = new SiteHeader(this, clo_site_header);
+        }
+
+        // rig up the site footer
+        let clo_site_footer_div = jQuery('#clo-footer-div');
+        if (clo_site_footer_div.length) {
+            this.site_footer = new SiteFooter(this, clo_site_footer_div);
+        }
+
+        // rig up homepage widget
+        let clo_homepage_widget_div = jQuery('#clo-homepage-widget-div');
+        if (clo_homepage_widget_div.length) {
+            this.homepage_widget = new HomePageWidget(this, clo_homepage_widget_div);
         }
 
         // rig up volume batches
@@ -39,6 +54,12 @@ class CarlyleLettersOnline {
         if (clo_album_viewer_div.length) {
             this.album_viewer_widget = new AlbumViewer(this, clo_album_viewer_div);
         }
+
+        // rig up search results viewer
+        let clo_search_results_div = jQuery('#clo-search-results-div');
+        if (clo-clo_search_results_div.length) {
+            this.search_results_widget = new SearchResultsViewer(this, clo_search_results_div);
+        }
     }
 
     make_request(path, type, params={}, callback, inject_host=true) {
@@ -61,6 +82,10 @@ class CarlyleLettersOnline {
 
         return jQuery.ajax(req);
     }
+
+    random_index(length) {
+        return Math.floor(Math.random() * length);
+    }
 }
 
 class SiteHeader {
@@ -76,11 +101,136 @@ class SiteHeader {
                 <a href="/browse-volume">Browse by Date and/or Volume</a>
                 <a href="/rubenstein">Rubenstein Collection</a>
                 <a href="/photo-album">Carlyle Photograph Albums</a>
+                <div class="d-inline-block dropdown">
+                  <button aria-haspopup="true" role="button" data-toggle="dropdown" id="aboutDropdown" class="dropdown-toggle btn btn-link" aria-expanded="true">About CLO</button>
+                  <div aria-labelledby="aboutDropdown" id="aboutDropdownList" x-placement="bottom-left" class="dropdown-menu" style="top: 0px; left: 0px; will-change: transform; position: absolute; transform: translate(0px, 38px);">
+                    <a class="dropdown-item" href="/about-carlyles">The Carlyles</a>
+                    <a class="dropdown-item" href="/about-project">Online Project</a>
+                    <a class="dropdown-item" href="/about-printedEdition">Printed Edition</a>
+                    <a class="dropdown-item" href="/about-citing">Editorial Methods</a>
+                    <a class="dropdown-item" href="/about-editors">Editors</a>
+                    <a class="dropdown-item" href="/about-supporters">Supporters</a>
+                    <a class="dropdown-item" href="/about-technical">Technical Team</a>
+                    <a class="dropdown-item" href="/about-copyright">Copyright and Permissions</a>
+                  </div>
+                </div>
+                <app-search>
+                  <div id="searchWrap" class="p-2">
+                    <div id="searchInput">
+                      <div id="formField">
+                        <input type="text" aria-label="Search" placeholder="Search" size="27" class="clo-search-bar">
+                      </div>
+                    </div>
+                  </div>
+                </app-search>
               </div>
             </div>
         `);
+
+        //jQuery('.dropdown-toggle').dropdown();
+        let search_bar = jQuery('.clo-search-bar');
+        search_bar.keyup(function(e) {
+            if (e.key === "Enter") {
+                console.log('enter event fired')
+                let query = search_bar.val().trim();
+                if (query) {
+                    window.location.href = `/search-results/${query}`;
+                }
+            }
+        });
     }
 }
+
+
+class SiteFooter {
+    constructor (clo_instance, element) {
+        this.clo = clo_instance;
+        this.element = element;
+
+        this.element.html(`
+            <footer class="footer py-4">
+              <app-footer>
+                <div id="footer_wrapper" class="container-fluid">
+                  <div id="footer" class="row align-items-center justify-content-center">
+                    <div id="footer_links" class="col-3">
+                      <div class="row align-items-center justify-content-center">
+                        <a href="https://read.dukeupress.edu/">read.dukeupress.edu</a>
+                        &nbsp;<span>|</span>&nbsp;
+                        <a href="https://www.dukeupress.edu/Legal/Privacy">Policies</a>
+                        &nbsp;<span>|</span>&nbsp;
+                        <a href="mailto:customerrelations@dukepress.edu">Contact Us</a>
+                        <div class="w-100"></div>
+                        <span>© Duke University Press</span>
+                      </div>
+                    </div>
+                    <div id="footer_logos" class="col-7">
+                      <div class="row align-items-center justify-content-center">
+                        <a href="https://www.dukeupress.edu/"><img class="mx-3" src="/wp-content/plugins/clo/img/duke_logo.png" alt="Duke University Press" border="0"></a>
+                        <a href="https://codhr.tamu.edu"><img class="mx-3" src="/wp-content/plugins/clo/img/CoDHR-logo.png" alt="Center of Digital Humanities Research at Texas A&amp;M University" border="0" style="max-height: 70px;"></a>
+                        <a href="https://library.duke.edu/rubenstein/"><img class="mx-3" src="/wp-content/plugins/clo/img/rubenstein-collection.png" alt="Rubenstein Collection" border="0" style="background-color: #000000; padding: 2px;"></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </app-footer>
+            </footer>
+        `)
+    }
+}
+
+
+class HomePageWidget {
+    constructor(clo_instance, element) {
+        this.clo = clo_instance;
+        this.element = element;
+        this.quotes = [
+            "What we become depends on what we read after all of the professors are done with us. The greatest university of all is a collection of books.",
+            "I've got a great ambition to die of exhaustion rather than boredom.",
+            "All that mankind has done, thought, gained, or been; it is lying as in magic preservation in the pages of books.",
+            "Go as far as you can see; when you get there, you'll be able to see further.",
+            "A loving heart is the beginning of all knowledge.",
+            "Conviction is worthless unless it is converted into conduct.",
+            "A loving heart is the beginning of all knowledge.",
+            "Conviction is worthless unless it is converted into conduct.",
+            "Every man is my superior in that I may learn from him.",
+            "The tragedy of life is not so much what men suffer, but rather what they miss.",
+            "Popular opinion is the greatest lie in the world."
+        ];
+
+        let sender = this;
+
+        sender.clo.make_request(
+            `/api/corpus/${sender.clo.corpus_id}/Photo/`,
+            'GET',
+            {'e_frontispiece_volume.label': 'y', 'only': 'iiif_url', 'page-size': 60},
+            function(photos) {
+                if (photos.hasOwnProperty('records') && photos.records.length) {
+                    let rand_photo_1 = sender.clo.random_index(photos.records.length);
+                    let rand_photo_2 = sender.clo.random_index(photos.records.length);
+                    let rand_quote = sender.clo.random_index(sender.quotes.length);
+                    while (rand_photo_2 === rand_photo_1) rand_photo_2 = sender.clo.random_index(photos.records.length);
+
+                    rand_photo_1 = `${photos.records[rand_photo_1].iiif_url}/full/,200/0/default.jpg`;
+                    rand_photo_2 = `${photos.records[rand_photo_2].iiif_url}/full/,200/0/default.jpg`;
+                    rand_quote = sender.quotes[rand_quote];
+
+                    sender.element.html(`
+                        <div class="d-flex flex-column flex-grow-1 justify-content-start align-items-center px-4">
+                          <div class="row mt-3 mb-3">
+                            <img src="${rand_photo_1}" class="portrait pr-3">
+                            <img src="${rand_photo_2}" class="portrait pl-3">
+                          </div>
+                          <div class="clo-quote-container mt-3">
+                            <p>“${rand_quote}”</p>
+                          </div>
+                        </div>
+                    `);
+                }
+            }
+        );
+    }
+}
+
 
 class VolumeBatch {
     constructor(clo_instance, element) {
@@ -88,10 +238,6 @@ class VolumeBatch {
         this.element = element;
 
         let sender = this;
-
-        sender.element.append(`
-            <h4 class="orange-border-bottom">Browse by Date and/or Volume</h4>
-        `);
 
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/VolumeBatch/`,
@@ -136,6 +282,7 @@ class VolumeBatch {
     }
 }
 
+
 class VolumeViewer {
     constructor(clo_instance, nav_element, viewer_element) {
         this.clo = clo_instance;
@@ -146,6 +293,7 @@ class VolumeViewer {
         this.max_vol_no = null;
         this.all_letter_dois = [];
         this.front_slug_id_map = {};
+        this.highlight = null;
 
         // check for url path parameters
         let path_parts = window.location.pathname.split('/');
@@ -155,6 +303,11 @@ class VolumeViewer {
 
             if (!isNaN(this.volume)) {
                 this.volume = parseInt(this.volume);
+            }
+
+            if (window.location.search) {
+                let get_params = new URLSearchParams(window.location.search);
+                this.highlight = get_params.get('highlight');
             }
         }
 
@@ -464,6 +617,17 @@ class VolumeViewer {
                                 ${letter_nav}
                             `);
                         }
+
+                        if (sender.highlight) {
+                            jQuery('#clo-letter-content-div').mark(sender.highlight, {className: `clo-letter-highlight`});
+                            let footnotes_div = jQuery('#clo-letter-footnotes-div');
+                            footnotes_div.attr('open', true);
+                            footnotes_div.mark(sender.highlight, {className: `clo-letter-highlight`});
+                            let highlights = jQuery('.clo-letter-highlight');
+                            if (highlights.length) {
+                                highlights[0].scrollIntoView();
+                            }
+                        }
                     }
 
                     sender.fix_navigation();
@@ -472,6 +636,7 @@ class VolumeViewer {
         );
     }
 }
+
 
 class PhotoAlbum {
     constructor(clo_instance, element) {
@@ -486,7 +651,7 @@ class PhotoAlbum {
             {'s_album_no': 'asc', 'only': 'title,album_no,description'},
             function (albums) {
                 if (albums.hasOwnProperty('records') && albums.records.length) {
-                    let html = '<div class="container mt-5"><div class="row"><div class="col-sm-6">';
+                    let html = '<div class="container mt-1"><div class="row"><div class="col-sm-6">';
 
                     albums.records.map((album, index) => {
                         html += `
@@ -505,6 +670,7 @@ class PhotoAlbum {
         );
     }
 }
+
 
 class AlbumViewer {
     constructor(clo_instance, element) {
@@ -729,5 +895,139 @@ class AlbumViewer {
                 false
             );
         }
+    }
+}
+
+
+class SearchResultsViewer {
+    constructor(clo_instance, element) {
+        this.clo = clo_instance;
+        this.element = element;
+        this.query = null;
+        this.page = 1;
+
+        // check for url path parameters
+        let path_parts = window.location.pathname.split('/');
+        if (path_parts.length === 4) {
+            this.query = decodeURI(path_parts[2]);
+        }
+
+        if (this.query) {
+            this.render_result_page();
+        }
+    }
+
+    render_result_page() {
+        this.element.html(`
+          <h4 class="clo-heading">Search Results for “${this.query}”</h4>
+        `);
+
+        let sender = this;
+        sender.clo.make_request(
+            `/api/corpus/${sender.clo.corpus_id}/Letter/`,
+            'GET',
+            {
+                q: sender.query,
+                page: sender.page,
+                'page-size': 50,
+                highlight_fields: 'html,footnotes',
+                only: 'doi,vol_no,sender.label,recipient.label,date_label'
+            },
+            function (results) {
+                if (results.hasOwnProperty('records') && results.records.length) {
+                    let start_result = ((sender.page - 1) * 50) + 1;
+                    let end_result = start_result + 50 - 1;
+                    if (end_result > results.meta.total) end_result = results.meta.total;
+
+                    let page_nav = `<ul class="clo-search-result-pager">`;
+                    for (let pg = 1; pg <= results.meta.num_pages; pg += 1) {
+                        page_nav += `<li class="clo-search-page-item ${pg === sender.page ? 'active' : ''}" data-page="${pg}">${pg}</li>`;
+                    }
+                    page_nav += '</ul>';
+
+                    sender.element.append(`
+                        <div class="row justify-content-between pt-2 pl-3">
+                          <span>Displaying ${start_result} - ${end_result} of ${results.meta.total} results.</span>
+                          ${page_nav}
+                        </div>
+                    `);
+                    results.records.map(result => {
+                        let letter_excerpt = "";
+                        let footnote_excerpt = "";
+                        let full_excerpt = "";
+                        let highlight = "";
+                        if (result.hasOwnProperty('_search_highlights')) {
+                            if (result._search_highlights.hasOwnProperty('html')) {
+                                let excerpt_fragments = result._search_highlights.html.map(frag => {
+                                    if (!highlight) {
+                                        let highlight_match = frag.match(/<em>([^<]*)<\/em>/);
+                                        if (highlight_match) highlight = highlight_match[1];
+                                    }
+                                    return sender.clean_search_highlight(frag);
+                                });
+                                letter_excerpt = excerpt_fragments.join(' ... ');
+                            }
+
+                            if (result._search_highlights.hasOwnProperty('footnotes')) {
+                                let excerpt_fragments = result._search_highlights.footnotes.map(frag => {
+                                    if (!highlight) {
+                                        let highlight_match = frag.match(/<em>([^<]*)<\/em>/);
+                                        if (highlight_match) highlight = highlight_match[1];
+                                    }
+                                    return sender.clean_search_highlight(frag);
+                                });
+                                footnote_excerpt = excerpt_fragments.join(' ... ');
+                            }
+                        }
+
+                        if (letter_excerpt) full_excerpt += `<b>Letter Excerpt:</b> ${letter_excerpt}`;
+                        if (footnote_excerpt) {
+                            if (full_excerpt) full_excerpt += '<br />';
+                            full_excerpt += `<b>Footnote Excerpt:</b> ${footnote_excerpt}`;
+                        }
+
+                        sender.element.append(`
+                            <div class="clo-search-result">
+                              <div class="clo-search-result-date">
+                                <a href="/volume/${result.vol_no}/${result.doi}${highlight ? `?highlight=${highlight}` : ''}" target="_blank">
+                                  ${result.date_label}
+                                </a>
+                              </div>
+                              <div class="clo-search-result-excerpt">
+                                ${full_excerpt}
+                              </div>
+                              <div class="clo-search-result-metadata">
+                                <b>From:</b> ${result.sender.label} | <b>To:</b> ${result.recipient.label} | <b>Volume:</b> ${result.vol_no} | <b>DOI:</b> ${result.doi}
+                              </div>
+                            </div>
+                        `);
+                    });
+
+                    sender.element.append(`
+                        <div class="row pl-3 justify-content-end">
+                          ${page_nav}
+                        </div>
+                    `);
+
+                    jQuery('.clo-search-page-item').click(function() {
+                        let clicked_page = jQuery(this).data('page');
+                        sender.page = parseInt(clicked_page);
+                        sender.render_result_page();
+                    });
+                } else {
+                    sender.element.append(`<div class="alert alert-info">No search results found.</div>`);
+                }
+            }
+        );
+    }
+
+    clean_search_highlight(frag) {
+        let fixed_frag = frag.replace('<em>', '|||+').replace('</em>', '+|||');
+        let open_tag_count = (frag.match(/</g) || []).length;
+        let close_tag_count = (frag.match(/>/g) || []).length;
+        if (open_tag_count > close_tag_count) fixed_frag = fixed_frag + '>';
+        else if (close_tag_count > open_tag_count) fixed_frag = '<' + fixed_frag;
+        fixed_frag = fixed_frag.replace(/(<([^>]+)>)/gi, "");
+        return fixed_frag.replace('|||+', '<mark class="clo-letter-highlight">').replace('+|||', '</mark>');
     }
 }

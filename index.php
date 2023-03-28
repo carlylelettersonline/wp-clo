@@ -27,6 +27,10 @@
         $page_id = $page->ID;
         add_rewrite_rule('^album-viewer/([^/]*)/?', 'index.php?page_id=' . $page_id . '&album=$matches[1]', 'top');
         add_rewrite_rule('^album-viewer/([^/]*)/([^/]*)/?', 'index.php?page_id=' . $page_id . '&album=$matches[1]&photo=$matches[2]', 'top');
+
+        $page = get_page_by_path('search-results');
+        $page_id = $page->ID;
+        add_rewrite_rule('^search-results/([^/]*)/?', 'index.php?page_id=' . $page_id . '&query=$matches[1]', 'top');
 	}
 	add_action('init', 'add_clo_rewrite_rules', 10, 0);
 
@@ -38,9 +42,7 @@
 	{
 		// Register Javascript
 		wp_enqueue_script('jquery');
-		wp_enqueue_script('jquery-ui-core');
-		wp_enqueue_script('jquery-ui-slider');
-		wp_enqueue_script('jquery-ui-dialog');
+		wp_enqueue_script('jquery-mark', plugin_dir_url(__FILE__).'js/jquery.mark.min.js');
 		wp_enqueue_script('clo-popper', plugin_dir_url(__FILE__).'js/popper.min.js');
 		wp_enqueue_script('clo-tippy', plugin_dir_url(__FILE__).'js/tippy-bundle.umd.min.js', array('clo-popper'));
 		wp_enqueue_script('clo-autocomplete', plugin_dir_url(__FILE__).'js/autoComplete.min.js');
@@ -50,9 +52,7 @@
 		    plugin_dir_url( __FILE__ ).'js/clo.js',
 		    array(
 		        'jquery',
-		        'jquery-ui-core',
-		        'jquery-ui-slider',
-		        'jquery-ui-dialog',
+		        'jquery-mark',
 		        'clo-popper',
 		        'clo-tippy',
 		        'clo-autocomplete',

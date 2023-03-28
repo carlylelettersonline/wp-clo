@@ -1,3 +1,9 @@
+html {
+    font-family: Georgia,Times New Roman,Times,serif!important;
+    font-size: 14px!important;
+    color: #344c5c!important;
+}
+
 body {
     font-family: Georgia,Times New Roman,Times,serif!important;
     font-size: 14px!important;
@@ -30,35 +36,99 @@ a:hover {
 
 #clo-nav-links-div {
     width: 90%;
-    font-size: 16px;
 }
 
-#clo-nav-links-div a {
+#clo-nav-links-div a, #clo-nav-links-div button {
     color: #c17953!important;
+    font-size: 16px;
     text-decoration: none;
+}
+
+#clo-nav-links-div a:hover, #clo-nav-links-div button:hover {
+    color: #a59657!important;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+}
+
+.clo-search-bar {
+    color: #666d77;
+    background: url(../img/magnifying-glass.png) no-repeat 98%/8% #f8f1e5;
+    border: 1px solid #9db993;
+    padding-left: 5px;
+    border-radius: 5px;
+}
+
+.clo-search-bar::placeholder {
+    color: #c17953;
+    opacity: 1;
+}
+
+footer {
+    border-top: 2px dotted #c17953!important;
+}
+
+#footer_links, #footer_links a {
+    color: #517b89!important;
 }
 
 h1, h2, h3, h4, h5, h6 {
     color: #5c8c48!important;
     font-weight: 700!important;
+    font-family: Georgia,Times New Roman,Times,serif!important;
+    margin-top: 0!important;
+    margin-bottom: 10px!important;
 }
 
 h4 {
-    font-size: 1.5rem!important;
+    font-size: 24px!important;
+}
+
+h5 {
+    font-size: 20px!important;
+    line-height: 25px!important;
 }
 
 h6 {
-    font-size: 1rem!important;
+    font-size: 16px!important;
+    color: #517b89!important;
+    line-height: 22px!important;
+}
+
+.clo-heading {
+    margin-top: 20px!important;
+    padding-bottom: 10px;
+    border-bottom: 2px dotted #c17953!important;
 }
 
 .orange-border-bottom {
     border-bottom: 2px dotted #c17953!important;
 }
 
+.orange-border-right {
+    border-right: 2px dotted #c17953!important;
+}
+
+.clo-quote-container p {
+    font-size: 22px;
+    font-style: italic;
+    color: #6e6e6e;
+}
+
+.clo-quote-container.small p {
+    font-size: 18px;
+}
+
 summary {
     font-size: 16px;
     font-weight: 700;
     color: #c17953!important;
+}
+
+summary:hover {
+    color: #a59657!important;
 }
 
 summary::before {
@@ -75,10 +145,16 @@ details details {
     padding-left: 20px;
 }
 
+details div.pl-2 {
+    text-indent: -40px;
+    margin-left: 40px;
+    margin-top: 5px;
+}
+
 .clo-volume-link {
     color: #21596f!important;
     font-weight: 700;
-    margin-left: 30px;
+    padding-left: 30px;
 }
 
 #clo-volume-navigator-div {
@@ -398,4 +474,59 @@ a.footnote.target {
     font-size: 16px;
     vertical-align: top;
     padding: 10px;
+}
+
+#clo-search-results-div {
+    max-width: 1000px;
+}
+
+.clo-search-result-pager {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+.clo-search-page-item {
+    background-color: #f5ebdc!important;
+    color: #000!important;
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+}
+
+.clo-search-page-item:hover {
+    background-color: #c17953!important;
+}
+
+.clo-search-page-item.active {
+    background-color: #21596f!important;
+    border-color: #21596f!important;
+    color: #fff!important;
+}
+
+.clo-search-result {
+    margin-top: 20px;
+    padding: 10px;
+    max-width: 650px;
+    background-color: #f5ebdc!important;
+}
+
+.clo-search-result-date {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.clo-search-result-excerpt {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+mark.clo-letter-highlight {
+    background-color: #c17953;
+    color: #FFFFFF;
 }
