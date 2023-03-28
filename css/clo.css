@@ -48,6 +48,30 @@ a:hover {
     color: #a59657!important;
 }
 
+@media screen and (min-width: 1601px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 18px !important;
+    }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1600px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 16px !important;
+    }
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1199px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 14px !important;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 14px !important;
+    }
+}
+
 .dropdown:hover .dropdown-menu {
     display: block;
     margin-top: 0;
