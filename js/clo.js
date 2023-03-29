@@ -86,6 +86,10 @@ class CarlyleLettersOnline {
     random_index(length) {
         return Math.floor(Math.random() * length);
     }
+
+    count_instances(a_string, instance) {
+        return a_string.split(instance).length;
+    }
 }
 
 class SiteHeader {
@@ -923,16 +927,27 @@ class SearchResultsViewer {
         `);
 
         let sender = this;
+
+        // default search, ideal for single keyword
+        let search_params = {
+            q: sender.query,
+            page: sender.page,
+            'page-size': 50,
+            highlight_fields: 'html,footnotes',
+            only: 'doi,vol_no,sender.label,recipient.label,date_label'
+        }
+
+        // phrase search
+        if (sender.query.trim().split(' ').length) {
+            delete search_params['q'];
+            search_params['q_html'] = sender.query;
+            search_params['q_footnotes'] = sender.query;
+        }
+
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/Letter/`,
             'GET',
-            {
-                q: sender.query,
-                page: sender.page,
-                'page-size': 50,
-                highlight_fields: 'html,footnotes',
-                only: 'doi,vol_no,sender.label,recipient.label,date_label'
-            },
+            search_params,
             function (results) {
                 if (results.hasOwnProperty('records') && results.records.length) {
                     let start_result = ((sender.page - 1) * 50) + 1;
