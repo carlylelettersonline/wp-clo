@@ -746,7 +746,7 @@ class AlbumViewer {
                     album = album.records[0];
                     let html = `
                       <div class="container">
-                        <h2 id="clo-album-viewer-title" class="orange-border-bottom" data-album_title="${album.title}">${album.title}</h2>
+                        <h4 id="clo-album-viewer-title" class="clo-heading" data-album_title="${album.title}">${album.title}</h4>
                         <div class="d-flex justify-content-center">
                           <div id="clo-album-viewer" class="w-100">
                     `;
@@ -842,6 +842,7 @@ class AlbumViewer {
         });
         metadata += `</table>`;
         photo_modal_footer.html(metadata);
+        setTimeout(() => {photo_modal_footer[0].scrollTop = 0}, 1000);
         photo_modal_image.empty();
 
         photo_modal.off('shown.bs.modal').on('shown.bs.modal', function() {

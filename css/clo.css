@@ -425,6 +425,7 @@ a.footnote.target {
 
 .clo-album-cell {
     padding: 4px;
+    cursor: pointer;
 }
 
 .clo-album-cell-matte {
@@ -474,6 +475,7 @@ a.footnote.target {
 
 #clo-album-feature-image {
     width: 100%;
+    cursor: pointer;
 }
 
 #clo-album-feature-modal-footer {
