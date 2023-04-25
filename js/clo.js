@@ -98,7 +98,7 @@ class SiteHeader {
         this.element = element;
 
         this.element.append(`
-            <img id="clo-header-image" src="/wp-content/plugins/clo/img/clo-header.png" alt="The Carlyle Letters Online" border="0" />
+            <img id="clo-header-image" src="/wp-content/plugins/clo/img/clo-header.png" alt="The Carlyle Letters Online" loading="lazy" border="0" />
             <div id="clo-nav-div" class="d-flex justify-content-center">
               <div id="clo-nav-links-div" class="d-flex justify-content-around align-items-center p-2">
                 <a href="/">Home</a>
