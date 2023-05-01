@@ -471,7 +471,6 @@ class VolumeViewer {
             letter_index > 0 ? prev_btns.show() : prev_btns.hide();
             letter_index === this.all_letter_dois.length - 1 ? next_btns.hide() : next_btns.show();
 
-            console.log('fired')
             jQuery('.clo-vol-toc-date').removeAttr('open');
             letters_toc.attr('open', true);
             date_toc.attr('open', true);
@@ -660,6 +659,7 @@ class VolumeViewer {
                             if (highlights.length) {
                                 highlights[0].scrollIntoView();
                             }
+                            sender.highlight = null;
                         }
                     }
 
