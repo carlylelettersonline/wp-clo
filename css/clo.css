@@ -278,7 +278,7 @@ details div.pl-2 {
     color: #344c5c!important;
 }
 
-.clo-vol-letter-link:hover {
+.clo-vol-nav-link:hover, .clo-vol-nav-link.active {
     color: #a59657!important;
 }
 
@@ -377,7 +377,7 @@ span.rend-italic {
 
 sup.footnote.origin {
     color: #007bff;
-    font-size: 17px;
+    font-size: 16px;
 }
 
 a.footnote.target {
@@ -542,9 +542,10 @@ a.footnote.target {
     background-color: #f5ebdc!important;
 }
 
-.clo-search-result-date {
-    font-size: 20px;
+.clo-search-result-heading {
+    font-size: 18px;
     font-weight: 700;
+    text-decoration: underline;
 }
 
 .clo-search-result-excerpt {

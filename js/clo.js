@@ -296,6 +296,7 @@ class VolumeViewer {
         this.letter = null;
         this.max_vol_no = null;
         this.all_letter_dois = [];
+        this.doi_toc_map = {};
         this.front_slug_id_map = {};
         this.highlight = null;
 
@@ -351,7 +352,7 @@ class VolumeViewer {
                                      </div>`;
                                 });
 
-                                let letters = '<details><summary>LETTERS</summary>';
+                                let letters = '<details id="clo-vol-toc-letters"><summary>LETTERS</summary>';
                                 let month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                                 let last_month = '';
 
@@ -364,13 +365,13 @@ class VolumeViewer {
                                             if (last_month) {
                                                 letters += '</details>';
                                             }
-                                            letters += `<details><summary>${month_label}</summary>`;
+                                            letters += `<details id="clo-vol-toc-${month_label.replace(' ', '')}" class="clo-vol-toc-date"><summary>${month_label}</summary>`;
                                             last_month = month_label;
                                         }
 
                                         letters += `
                                             <div class="clo-vol-letter-link-div">
-                                                <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}">
+                                                <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}" data-doi="${letter.doi}">
                                                     <span class="clo-vol-letter-link-date">${letter.label}</span><br />
                                                     <span class="clo-vol-letter-link-desc">${letter.description}</span>
                                                 </a>
@@ -378,6 +379,7 @@ class VolumeViewer {
                                         `;
 
                                         sender.all_letter_dois.push(letter.doi);
+                                        sender.doi_toc_map[letter.doi] = `clo-vol-toc-${month_label.replace(' ', '')}`;
                                     }
                                 });
                                 letters += `</details></details>`;
@@ -449,17 +451,34 @@ class VolumeViewer {
 
     fix_navigation() {
         let sender = this;
+        let nav_links = jQuery('.clo-vol-nav-link');
 
         if (this.max_vol_no) {
             if (this.volume < 2) jQuery('#clo-vol-prev').hide();
             if (this.volume >= this.max_vol_no) jQuery('#clo-vol-next').hide();
-        } else if (this.all_letter_dois.includes(this.letter)) {
+        }
+
+        nav_links.removeClass('active');
+
+        if (this.all_letter_dois.includes(this.letter)) {
             let letter_index = this.all_letter_dois.indexOf(this.letter);
             let prev_btns = jQuery('.clo-letter-nav-link.prev');
             let next_btns = jQuery('.clo-letter-nav-link.next');
+            let letters_toc = jQuery('#clo-vol-toc-letters');
+            let date_toc = jQuery(`#${sender.doi_toc_map[this.letter]}`);
+            let letter_link = jQuery(`a.clo-vol-letter-link[data-doi=${this.letter}]`);
 
             letter_index > 0 ? prev_btns.show() : prev_btns.hide();
             letter_index === this.all_letter_dois.length - 1 ? next_btns.hide() : next_btns.show();
+
+            console.log('fired')
+            jQuery('.clo-vol-toc-date').removeAttr('open');
+            letters_toc.attr('open', true);
+            date_toc.attr('open', true);
+            letter_link.addClass('active');
+        } else if (this.letter in this.front_slug_id_map) {
+            let frontmatter_link = jQuery(`a.clo-vol-front-matter-link[data-id=${this.front_slug_id_map[this.letter]}]`);
+            frontmatter_link.addClass('active');
         }
 
         // volume navigation
@@ -471,7 +490,7 @@ class VolumeViewer {
         });
 
         // TOC navigation
-        jQuery('.clo-vol-nav-link').click(function() {
+        nav_links.click(function() {
             let link = jQuery(this);
             sender.render_content(link.data('text-type'), link.data('id'));
             sender.clo.site_header.element[0].scrollIntoView();
@@ -481,10 +500,18 @@ class VolumeViewer {
         jQuery('.clo-letter-nav-link').click(function() {
             let link = jQuery(this);
             let letter_doi_index = sender.all_letter_dois.indexOf(sender.letter);
+            let subsequent_doi = null;
+
             if (link.hasClass('prev') && letter_doi_index > 0) {
-                window.location.href = `/volume/${sender.volume}/${sender.all_letter_dois[letter_doi_index - 1]}`;
+                subsequent_doi = sender.all_letter_dois[letter_doi_index - 1];
             } else if (link.hasClass('next') && letter_doi_index < sender.all_letter_dois.length - 1) {
-                window.location.href = `/volume/${sender.volume}/${sender.all_letter_dois[letter_doi_index + 1]}`;
+                subsequent_doi = sender.all_letter_dois[letter_doi_index + 1];
+            }
+
+            if (subsequent_doi !== null) {
+                let letter_link = jQuery(`a.clo-vol-letter-link[data-doi=${subsequent_doi}]`);
+                let subsequent_id = letter_link.data('id');
+                sender.render_content('Letter', subsequent_id);
             }
         });
 
@@ -542,6 +569,7 @@ class VolumeViewer {
 
                     // render front matter
                     if (content.content_type === 'FrontMatter') {
+                        sender.letter = content.slug;
                         history.replaceState(null, content.title, `/volume/${sender.volume}/${content.slug}`);
                         sender.viewer_element.html(`
                             <div id="clo-letter-content-div">
@@ -554,6 +582,7 @@ class VolumeViewer {
 
                     // render letter
                     } else if (content.content_type === 'Letter') {
+                        sender.letter = content.doi;
                         history.replaceState(null, content.date_label, `/volume/${sender.volume}/${content.doi}`);
                         let letter_nav = `
                             <div class="clo-letter-nav-div">
@@ -931,19 +960,23 @@ class SearchResultsViewer {
 
         // default search, ideal for single keyword
         let search_params = {
-            q: sender.query,
+            t_html: sender.query,
+            t_footnotes: sender.query,
+            p_html: sender.query,
+            p_footnotes: sender.query,
             page: sender.page,
+            operator: 'or',
             'page-size': 50,
             highlight_fields: 'html,footnotes',
-            only: 'doi,vol_no,sender.label,recipient.label,date_label'
+            only: 'doi,vol_no,sender.label,recipient.label,date_label',
         }
 
         // phrase search
-        if (sender.query.trim().split(' ').length) {
-            delete search_params['q'];
-            search_params['q_html'] = sender.query;
-            search_params['q_footnotes'] = sender.query;
-        }
+        //if (sender.query.trim().split(' ').length) {
+        //    delete search_params['q'];
+        //    search_params['q_html'] = sender.query;
+        //    search_params['q_footnotes'] = sender.query;
+        //}
 
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/Letter/`,
@@ -996,24 +1029,21 @@ class SearchResultsViewer {
                             }
                         }
 
-                        if (letter_excerpt) full_excerpt += `<b>Letter Excerpt:</b> ${letter_excerpt}`;
+                        if (letter_excerpt) full_excerpt += `<div class="clo-search-result-excerpt"><b>Letter Excerpt:</b> ${letter_excerpt}</div>`;
                         if (footnote_excerpt) {
-                            if (full_excerpt) full_excerpt += '<br />';
-                            full_excerpt += `<b>Footnote Excerpt:</b> ${footnote_excerpt}`;
+                            full_excerpt += `<div class="clo-search-result-excerpt"><b>Footnote Excerpt:</b> ${footnote_excerpt}</div>`;
                         }
 
                         sender.element.append(`
                             <div class="clo-search-result">
-                              <div class="clo-search-result-date">
+                              <div class="clo-search-result-heading">
                                 <a href="/volume/${result.vol_no}/${result.doi}${highlight ? `?highlight=${highlight}` : ''}" target="_blank">
-                                  ${result.date_label}
+                                  From ${result.sender.label} to ${result.recipient.label} on ${result.date_label}
                                 </a>
                               </div>
-                              <div class="clo-search-result-excerpt">
-                                ${full_excerpt}
-                              </div>
+                              ${full_excerpt}
                               <div class="clo-search-result-metadata">
-                                <b>From:</b> ${result.sender.label} | <b>To:</b> ${result.recipient.label} | <b>Volume:</b> ${result.vol_no} | <b>DOI:</b> ${result.doi}
+                                <b>Volume:</b> ${result.vol_no} | <b>DOI:</b> ${result.doi}
                               </div>
                             </div>
                         `);
