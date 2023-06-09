@@ -22,12 +22,16 @@ a:hover {
     background-image: url(../img/clo-header-background.png);
     background-repeat: repeat;
     background-size: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #clo-header-image {
     width: 100%;
     max-width: 1440px;
     height: 25%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #clo-nav-div {
@@ -46,6 +50,30 @@ a:hover {
 
 #clo-nav-links-div a:hover, #clo-nav-links-div button:hover {
     color: #a59657!important;
+}
+
+@media screen and (min-width: 1601px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 18px !important;
+    }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1600px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 16px !important;
+    }
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1199px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 14px !important;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    #clo-nav-links-div a, #clo-nav-links-div button {
+        font-size: 14px !important;
+    }
 }
 
 .dropdown:hover .dropdown-menu {
@@ -151,6 +179,10 @@ details div.pl-2 {
     margin-top: 5px;
 }
 
+.clo-volume-batch {
+    margin-bottom: 30px;
+}
+
 .clo-volume-link {
     color: #21596f!important;
     font-weight: 700;
@@ -254,7 +286,7 @@ details div.pl-2 {
     color: #344c5c!important;
 }
 
-.clo-vol-letter-link:hover {
+.clo-vol-nav-link:hover, .clo-vol-nav-link.active {
     color: #a59657!important;
 }
 
@@ -274,6 +306,11 @@ details div.pl-2 {
     background: #f5ebdc;
     max-height: 700px;
     align-items: center;
+}
+
+.clo-letter-frontispiece-image {
+    max-height: 600px;
+    width: auto;
 }
 
 .clo-letter-frontispiece-caption {
@@ -353,11 +390,11 @@ span.rend-italic {
 
 sup.footnote.origin {
     color: #007bff;
-    font-size: 17px;
+    font-size: 14px;
 }
 
 a.footnote.target {
-    font-size: 18px;
+    font-size: 14px;
     color: #c17953!important;
     margin-right: 5px;
 }
@@ -401,6 +438,7 @@ a.footnote.target {
 
 .clo-album-cell {
     padding: 4px;
+    cursor: pointer;
 }
 
 .clo-album-cell-matte {
@@ -450,6 +488,7 @@ a.footnote.target {
 
 #clo-album-feature-image {
     width: 100%;
+    cursor: pointer;
 }
 
 #clo-album-feature-modal-footer {
@@ -516,9 +555,10 @@ a.footnote.target {
     background-color: #f5ebdc!important;
 }
 
-.clo-search-result-date {
-    font-size: 20px;
+.clo-search-result-heading {
+    font-size: 18px;
     font-weight: 700;
+    text-decoration: underline;
 }
 
 .clo-search-result-excerpt {

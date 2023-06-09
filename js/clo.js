@@ -86,6 +86,10 @@ class CarlyleLettersOnline {
     random_index(length) {
         return Math.floor(Math.random() * length);
     }
+
+    count_instances(a_string, instance) {
+        return a_string.split(instance).length;
+    }
 }
 
 class SiteHeader {
@@ -94,7 +98,7 @@ class SiteHeader {
         this.element = element;
 
         this.element.append(`
-            <img id="clo-header-image" src="/wp-content/plugins/clo/img/clo-header.png" alt="The Carlyle Letters Online" border="0" />
+            <img id="clo-header-image" src="/wp-content/plugins/clo/img/clo-header.png" alt="The Carlyle Letters Online" loading="lazy" border="0" />
             <div id="clo-nav-div" class="d-flex justify-content-center">
               <div id="clo-nav-links-div" class="d-flex justify-content-around align-items-center p-2">
                 <a href="/">Home</a>
@@ -107,7 +111,7 @@ class SiteHeader {
                     <a class="dropdown-item" href="/about-carlyles">The Carlyles</a>
                     <a class="dropdown-item" href="/about-project">Online Project</a>
                     <a class="dropdown-item" href="/about-printedEdition">Printed Edition</a>
-                    <a class="dropdown-item" href="/about-citing">Editorial Methods</a>
+                    <a class="dropdown-item" href="/about-editorial-methods">Editorial Methods</a>
                     <a class="dropdown-item" href="/about-editors">Editors</a>
                     <a class="dropdown-item" href="/about-supporters">Supporters</a>
                     <a class="dropdown-item" href="/about-technical">Technical Team</a>
@@ -245,22 +249,26 @@ class VolumeBatch {
             {'s_order': 'asc', 'page-size': 50},
             function (data) {
                 if (data.hasOwnProperty('records')) {
-                    let html = '';
+                    let html_template = (batches) => {
+                        return `
+                            <div class="row">
+                                <div class="col-sm-6">${batches[0]}</div>
+                                <div class="col-sm-6">${batches[2]}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">${batches[1]}</div>
+                                <div class="col-sm-6">${batches[3]}</div>
+                            </div>
+                        `;
+                    };
 
+                    let batches = [];
                     data.records.map((record, record_index) => {
                         let min_vol_no = record.volumes[0].volume_no;
                         let max_vol_no = record.volumes[record.volumes.length - 1].volume_no;
                         let vol_links = record.volumes.map(vol => `<a href="/volume/${vol.volume_no}/frontispiece" class="clo-volume-link">${vol.label}: ${vol.description}</a>`);
-                        let before = `<div class="row"><div class="col-sm-6">`;
-                        let after = `</div>`;
 
-                        if (record_index % 2 !== 0) {
-                            before = `<div class="col-sm-6">`;
-                            after = `</div></div>`;
-                        }
-
-                        html += `
-                            ${before}
+                        batches.push(`
                             <div class="clo-volume-batch">
                                 <h6 class="mb-0">${record.title}<br />${record.date_range}</h6>
                                 <details class="mt-1 mb-1">
@@ -271,11 +279,10 @@ class VolumeBatch {
                                     ${record.selected_contents}
                                 </div>
                             </div>
-                            ${after}
-                        `;
+                        `);
                     });
 
-                    sender.element.append(html);
+                    sender.element.append(html_template(batches));
                 }
             }
         );
@@ -292,6 +299,7 @@ class VolumeViewer {
         this.letter = null;
         this.max_vol_no = null;
         this.all_letter_dois = [];
+        this.doi_toc_map = {};
         this.front_slug_id_map = {};
         this.highlight = null;
 
@@ -347,7 +355,7 @@ class VolumeViewer {
                                      </div>`;
                                 });
 
-                                let letters = '<details><summary>LETTERS</summary>';
+                                let letters = '<details id="clo-vol-toc-letters"><summary>LETTERS</summary>';
                                 let month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                                 let last_month = '';
 
@@ -360,13 +368,13 @@ class VolumeViewer {
                                             if (last_month) {
                                                 letters += '</details>';
                                             }
-                                            letters += `<details><summary>${month_label}</summary>`;
+                                            letters += `<details id="clo-vol-toc-${month_label.replace(' ', '')}" class="clo-vol-toc-date"><summary>${month_label}</summary>`;
                                             last_month = month_label;
                                         }
 
                                         letters += `
                                             <div class="clo-vol-letter-link-div">
-                                                <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}">
+                                                <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}" data-doi="${letter.doi}">
                                                     <span class="clo-vol-letter-link-date">${letter.label}</span><br />
                                                     <span class="clo-vol-letter-link-desc">${letter.description}</span>
                                                 </a>
@@ -374,6 +382,7 @@ class VolumeViewer {
                                         `;
 
                                         sender.all_letter_dois.push(letter.doi);
+                                        sender.doi_toc_map[letter.doi] = `clo-vol-toc-${month_label.replace(' ', '')}`;
                                     }
                                 });
                                 letters += `</details></details>`;
@@ -412,7 +421,7 @@ class VolumeViewer {
                                         function (frontis) {
                                             sender.viewer_element.append(`
                                     <div class="clo-letter-frontispiece-div">
-                                        <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" />
+                                        <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" class="clo-letter-frontispiece-image" />
                                         <div class="clo-letter-frontispiece-caption">${frontis.records[0].description}</div>
                                     </div>
                                 `);
@@ -445,17 +454,33 @@ class VolumeViewer {
 
     fix_navigation() {
         let sender = this;
+        let nav_links = jQuery('.clo-vol-nav-link');
 
         if (this.max_vol_no) {
             if (this.volume < 2) jQuery('#clo-vol-prev').hide();
             if (this.volume >= this.max_vol_no) jQuery('#clo-vol-next').hide();
-        } else if (this.all_letter_dois.includes(this.letter)) {
+        }
+
+        nav_links.removeClass('active');
+
+        if (this.all_letter_dois.includes(this.letter)) {
             let letter_index = this.all_letter_dois.indexOf(this.letter);
             let prev_btns = jQuery('.clo-letter-nav-link.prev');
             let next_btns = jQuery('.clo-letter-nav-link.next');
+            let letters_toc = jQuery('#clo-vol-toc-letters');
+            let date_toc = jQuery(`#${sender.doi_toc_map[this.letter]}`);
+            let letter_link = jQuery(`a.clo-vol-letter-link[data-doi=${this.letter}]`);
 
             letter_index > 0 ? prev_btns.show() : prev_btns.hide();
             letter_index === this.all_letter_dois.length - 1 ? next_btns.hide() : next_btns.show();
+
+            jQuery('.clo-vol-toc-date').removeAttr('open');
+            letters_toc.attr('open', true);
+            date_toc.attr('open', true);
+            letter_link.addClass('active');
+        } else if (this.letter in this.front_slug_id_map) {
+            let frontmatter_link = jQuery(`a.clo-vol-front-matter-link[data-id=${this.front_slug_id_map[this.letter]}]`);
+            frontmatter_link.addClass('active');
         }
 
         // volume navigation
@@ -467,7 +492,7 @@ class VolumeViewer {
         });
 
         // TOC navigation
-        jQuery('.clo-vol-nav-link').click(function() {
+        nav_links.click(function() {
             let link = jQuery(this);
             sender.render_content(link.data('text-type'), link.data('id'));
             sender.clo.site_header.element[0].scrollIntoView();
@@ -477,10 +502,18 @@ class VolumeViewer {
         jQuery('.clo-letter-nav-link').click(function() {
             let link = jQuery(this);
             let letter_doi_index = sender.all_letter_dois.indexOf(sender.letter);
+            let subsequent_doi = null;
+
             if (link.hasClass('prev') && letter_doi_index > 0) {
-                window.location.href = `/volume/${sender.volume}/${sender.all_letter_dois[letter_doi_index - 1]}`;
+                subsequent_doi = sender.all_letter_dois[letter_doi_index - 1];
             } else if (link.hasClass('next') && letter_doi_index < sender.all_letter_dois.length - 1) {
-                window.location.href = `/volume/${sender.volume}/${sender.all_letter_dois[letter_doi_index + 1]}`;
+                subsequent_doi = sender.all_letter_dois[letter_doi_index + 1];
+            }
+
+            if (subsequent_doi !== null) {
+                let letter_link = jQuery(`a.clo-vol-letter-link[data-doi=${subsequent_doi}]`);
+                let subsequent_id = letter_link.data('id');
+                sender.render_content('Letter', subsequent_id);
             }
         });
 
@@ -538,6 +571,7 @@ class VolumeViewer {
 
                     // render front matter
                     if (content.content_type === 'FrontMatter') {
+                        sender.letter = content.slug;
                         history.replaceState(null, content.title, `/volume/${sender.volume}/${content.slug}`);
                         sender.viewer_element.html(`
                             <div id="clo-letter-content-div">
@@ -550,6 +584,7 @@ class VolumeViewer {
 
                     // render letter
                     } else if (content.content_type === 'Letter') {
+                        sender.letter = content.doi;
                         history.replaceState(null, content.date_label, `/volume/${sender.volume}/${content.doi}`);
                         let letter_nav = `
                             <div class="clo-letter-nav-div">
@@ -627,6 +662,7 @@ class VolumeViewer {
                             if (highlights.length) {
                                 highlights[0].scrollIntoView();
                             }
+                            sender.highlight = null;
                         }
                     }
 
@@ -742,7 +778,7 @@ class AlbumViewer {
                     album = album.records[0];
                     let html = `
                       <div class="container">
-                        <h2 id="clo-album-viewer-title" class="orange-border-bottom" data-album_title="${album.title}">${album.title}</h2>
+                        <h4 id="clo-album-viewer-title" class="clo-heading" data-album_title="${album.title}">${album.title}</h4>
                         <div class="d-flex justify-content-center">
                           <div id="clo-album-viewer" class="w-100">
                     `;
@@ -838,6 +874,7 @@ class AlbumViewer {
         });
         metadata += `</table>`;
         photo_modal_footer.html(metadata);
+        setTimeout(() => {photo_modal_footer[0].scrollTop = 0}, 1000);
         photo_modal_image.empty();
 
         photo_modal.off('shown.bs.modal').on('shown.bs.modal', function() {
@@ -923,16 +960,31 @@ class SearchResultsViewer {
         `);
 
         let sender = this;
+
+        // default search, ideal for single keyword
+        let search_params = {
+            t_html: sender.query,
+            t_footnotes: sender.query,
+            p_html: sender.query,
+            p_footnotes: sender.query,
+            page: sender.page,
+            operator: 'or',
+            'page-size': 50,
+            highlight_fields: 'html,footnotes',
+            only: 'doi,vol_no,sender.label,recipient.label,date_label',
+        }
+
+        // phrase search
+        //if (sender.query.trim().split(' ').length) {
+        //    delete search_params['q'];
+        //    search_params['q_html'] = sender.query;
+        //    search_params['q_footnotes'] = sender.query;
+        //}
+
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/Letter/`,
             'GET',
-            {
-                q: sender.query,
-                page: sender.page,
-                'page-size': 50,
-                highlight_fields: 'html,footnotes',
-                only: 'doi,vol_no,sender.label,recipient.label,date_label'
-            },
+            search_params,
             function (results) {
                 if (results.hasOwnProperty('records') && results.records.length) {
                     let start_result = ((sender.page - 1) * 50) + 1;
@@ -980,24 +1032,21 @@ class SearchResultsViewer {
                             }
                         }
 
-                        if (letter_excerpt) full_excerpt += `<b>Letter Excerpt:</b> ${letter_excerpt}`;
+                        if (letter_excerpt) full_excerpt += `<div class="clo-search-result-excerpt"><b>Letter Excerpt:</b> ${letter_excerpt}</div>`;
                         if (footnote_excerpt) {
-                            if (full_excerpt) full_excerpt += '<br />';
-                            full_excerpt += `<b>Footnote Excerpt:</b> ${footnote_excerpt}`;
+                            full_excerpt += `<div class="clo-search-result-excerpt"><b>Footnote Excerpt:</b> ${footnote_excerpt}</div>`;
                         }
 
                         sender.element.append(`
                             <div class="clo-search-result">
-                              <div class="clo-search-result-date">
+                              <div class="clo-search-result-heading">
                                 <a href="/volume/${result.vol_no}/${result.doi}${highlight ? `?highlight=${highlight}` : ''}" target="_blank">
-                                  ${result.date_label}
+                                  From ${result.sender.label} to ${result.recipient.label} on ${result.date_label}
                                 </a>
                               </div>
-                              <div class="clo-search-result-excerpt">
-                                ${full_excerpt}
-                              </div>
+                              ${full_excerpt}
                               <div class="clo-search-result-metadata">
-                                <b>From:</b> ${result.sender.label} | <b>To:</b> ${result.recipient.label} | <b>Volume:</b> ${result.vol_no} | <b>DOI:</b> ${result.doi}
+                                <b>Volume:</b> ${result.vol_no} | <b>DOI:</b> ${result.doi}
                               </div>
                             </div>
                         `);
