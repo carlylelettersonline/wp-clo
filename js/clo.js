@@ -804,7 +804,6 @@ class AlbumViewer {
                     });
 
                     html += `
-                            <
                          </div>
                         </div>
                       </div>
