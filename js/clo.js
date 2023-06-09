@@ -790,7 +790,7 @@ class AlbumViewer {
                               <div class="clo-album-cell-inner">
                                 <div class="clo-album-tooltiptext" tabindex="${index}">${photo.title}</div>
                                 <img id="clo-album-photo-${photo.id}"
-                                     class="clo-album-photo"
+                                     class="clo-album-photo clo-album-photo-placeholder"
                                      src="/wp-content/plugins/clo/img/placeholder-image.jpeg"
                                      data-iiif_url="${photo.iiif_url}"
                                      data-photo_no="${index}"
@@ -814,9 +814,11 @@ class AlbumViewer {
                     let album_photos = jQuery('.clo-album-photo');
                     let album_viewer = jQuery('#clo-album-viewer');
 
-                    album_photos.each(function() {
-                        sender.photo_observer.observe(this);
-                    });
+                    setTimeout(() => {
+                        album_photos.each(function() {
+                            sender.photo_observer.observe(this);
+                        });
+                    }, 1500);
 
                     album_photos.click(function() {
                         sender.feature_image(parseInt(jQuery(this).data('photo_no')));
@@ -922,6 +924,9 @@ class AlbumViewer {
 
                         iiif_url = `${iiif_url}/full/${max_width},/0/default.jpg`;
                         img.attr('src', iiif_url);
+                        img[0].onload = function() {
+                            jQuery(this).removeClass('clo-album-photo-placeholder');
+                        }
                         img.attr('rendered', true);
 
                         let photo_no = parseInt(img.data('photo_no'));
