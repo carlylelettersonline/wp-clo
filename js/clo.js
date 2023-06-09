@@ -111,7 +111,7 @@ class SiteHeader {
                     <a class="dropdown-item" href="/about-carlyles">The Carlyles</a>
                     <a class="dropdown-item" href="/about-project">Online Project</a>
                     <a class="dropdown-item" href="/about-printedEdition">Printed Edition</a>
-                    <a class="dropdown-item" href="/about-citing">Editorial Methods</a>
+                    <a class="dropdown-item" href="/about-editorial-methods">Editorial Methods</a>
                     <a class="dropdown-item" href="/about-editors">Editors</a>
                     <a class="dropdown-item" href="/about-supporters">Supporters</a>
                     <a class="dropdown-item" href="/about-technical">Technical Team</a>
@@ -249,22 +249,26 @@ class VolumeBatch {
             {'s_order': 'asc', 'page-size': 50},
             function (data) {
                 if (data.hasOwnProperty('records')) {
-                    let html = '';
+                    let html_template = (batches) => {
+                        return `
+                            <div class="row">
+                                <div class="col-sm-6">${batches[0]}</div>
+                                <div class="col-sm-6">${batches[2]}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">${batches[1]}</div>
+                                <div class="col-sm-6">${batches[3]}</div>
+                            </div>
+                        `;
+                    };
 
+                    let batches = [];
                     data.records.map((record, record_index) => {
                         let min_vol_no = record.volumes[0].volume_no;
                         let max_vol_no = record.volumes[record.volumes.length - 1].volume_no;
                         let vol_links = record.volumes.map(vol => `<a href="/volume/${vol.volume_no}/frontispiece" class="clo-volume-link">${vol.label}: ${vol.description}</a>`);
-                        let before = `<div class="row"><div class="col-sm-6">`;
-                        let after = `</div>`;
 
-                        if (record_index % 2 !== 0) {
-                            before = `<div class="col-sm-6">`;
-                            after = `</div></div>`;
-                        }
-
-                        html += `
-                            ${before}
+                        batches.push(`
                             <div class="clo-volume-batch">
                                 <h6 class="mb-0">${record.title}<br />${record.date_range}</h6>
                                 <details class="mt-1 mb-1">
@@ -275,11 +279,10 @@ class VolumeBatch {
                                     ${record.selected_contents}
                                 </div>
                             </div>
-                            ${after}
-                        `;
+                        `);
                     });
 
-                    sender.element.append(html);
+                    sender.element.append(html_template(batches));
                 }
             }
         );
@@ -418,7 +421,7 @@ class VolumeViewer {
                                         function (frontis) {
                                             sender.viewer_element.append(`
                                     <div class="clo-letter-frontispiece-div">
-                                        <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" />
+                                        <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" class="clo-letter-frontispiece-image" />
                                         <div class="clo-letter-frontispiece-caption">${frontis.records[0].description}</div>
                                     </div>
                                 `);
