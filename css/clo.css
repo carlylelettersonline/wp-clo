@@ -471,10 +471,14 @@ a.footnote.target {
 .clo-album-photo {
     border: 1px solid #ddd!important;
     border-radius: 4px!important;
-    /*height: 200px!important; */
     padding: 5px;
     width: auto;
     pointer: cursor;
+}
+
+.clo-album-photo-placeholder {
+    width: 300px!important;
+    height: 400px!important;
 }
 
 .clo-album-photo:hover {
