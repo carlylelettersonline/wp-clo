@@ -420,11 +420,11 @@ class VolumeViewer {
                                         {'f_frontispiece_volume.id': volume_id, 'only': 'iiif_url,description'},
                                         function (frontis) {
                                             sender.viewer_element.append(`
-                                    <div class="clo-letter-frontispiece-div">
-                                        <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" class="clo-letter-frontispiece-image" />
-                                        <div class="clo-letter-frontispiece-caption">${frontis.records[0].description}</div>
-                                    </div>
-                                `);
+                                                <div class="clo-letter-frontispiece-div">
+                                                    <img src="${frontis.records[0].iiif_url}/full/full/0/default.jpg" class="clo-letter-frontispiece-image" />
+                                                    <div class="clo-letter-frontispiece-caption">${frontis.records[0].description ? frontis.records[0].description : ''}</div>
+                                                </div>
+                                            `);
                                         }
                                     );
                                 } else if (sender.letter.startsWith('lt-')) {
