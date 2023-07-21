@@ -338,10 +338,7 @@ class VolumeViewer {
                             if (vol_data.hasOwnProperty('records') && vol_data.records.length === 1) {
                                 let vol = vol_data.records[0];
                                 let front_matters = vol.front_matters.map(front_matter => {
-                                    let label = front_matter.label;
-                                    let start_tag_index = label.indexOf('&lt;');
-                                    if (start_tag_index > -1)
-                                        label = label.substring(0, start_tag_index);
+                                    let label = front_matter.label.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
 
                                     sender.front_slug_id_map[front_matter.slug] = front_matter.id;
 
