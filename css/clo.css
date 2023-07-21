@@ -384,6 +384,10 @@ span.rend-italic {
     font-style: italic;
 }
 
+span.rend-small-caps {
+    font-variant: small-caps;
+}
+
 #clo-letter-content-div .dateline, #clo-letter-content-div p {
     margin-bottom: 1rem;
 }
