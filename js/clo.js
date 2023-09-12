@@ -90,6 +90,12 @@ class CarlyleLettersOnline {
     count_instances(a_string, instance) {
         return a_string.split(instance).length;
     }
+
+    sanitize(a_string) {
+        const div = document.createElement('div')
+        div.textContent = a_string
+        return div.innerHTML
+    }
 }
 
 class SiteHeader {
@@ -948,6 +954,7 @@ class SearchResultsViewer {
         let path_parts = window.location.pathname.split('/');
         if (path_parts.length === 4) {
             this.query = decodeURI(path_parts[2]);
+            this.query = this.clo.sanitize(this.query);
         }
 
         if (this.query) {
@@ -974,13 +981,6 @@ class SearchResultsViewer {
             highlight_fields: 'html,footnotes',
             only: 'doi,vol_no,sender.label,recipient.label,date_label',
         }
-
-        // phrase search
-        //if (sender.query.trim().split(' ').length) {
-        //    delete search_params['q'];
-        //    search_params['q_html'] = sender.query;
-        //    search_params['q_footnotes'] = sender.query;
-        //}
 
         sender.clo.make_request(
             `/api/corpus/${sender.clo.corpus_id}/Letter/`,
