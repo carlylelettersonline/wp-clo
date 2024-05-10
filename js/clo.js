@@ -920,7 +920,8 @@ class SearchResultsViewer {
                 a_terms_senders: 'sender.name,sender.id',
                 a_terms_recipients: 'recipient.name,recipient.id',
                 a_max_maxdate: 'date',
-                a_min_mindate: 'date'
+                a_min_mindate: 'date',
+                s_date: 'asc'
             },
             frontmatter: {
                 page: 1,
@@ -997,8 +998,12 @@ class SearchResultsViewer {
             sender.recipient_table = new DataTable('#adv-search-recipient-table', table_props)
             sender.recipient_table.on('click', 'tbody tr', function() { sender.select_person(sender.recipient_table.row(this), 'recipient') })
 
+            jQuery('.date-box').change(function() {
+                sender.date_filter_button.addClass('pulse')
+            })
             sender.date_filter_button.click(function() {
                 sender.date_range.apply = true
+                sender.date_filter_button.removeClass('pulse')
                 sender.render_result_page()
             })
 
@@ -1081,6 +1086,9 @@ class SearchResultsViewer {
 
                     if (sender.query) {
                         sender.search_box.val(sender.query)
+                        delete sender.criteria.letters.s_date
+                    } else {
+                        sender.sort_box.val('asc')
                     }
 
                     sender.render_result_page()
@@ -1125,7 +1133,8 @@ class SearchResultsViewer {
                     group_prefix = '1_'
                 }
                 letter_contents.forEach(field => {
-                    this.criteria.letters[`${group_prefix}q_${field}`] = q
+                    this.criteria.letters[`${group_prefix}t_${field}`] = q
+                    this.criteria.letters[`${group_prefix}p_${field}`] = q
                 })
             }
 
@@ -1205,12 +1214,12 @@ class SearchResultsViewer {
         this.date_range.max.month = max.getUTCMonth() + 1
         this.date_range.max.day = max.getUTCDate()
 
-        this.from_year_box.attr('placeholder', this.date_range.min.year)
-        this.from_month_box.attr('placeholder', this.date_range.min.month)
-        this.from_day_box.attr('placeholder', this.date_range.min.day)
-        this.to_year_box.attr('placeholder', this.date_range.max.year)
-        this.to_month_box.attr('placeholder', this.date_range.max.month)
-        this.to_day_box.attr('placeholder', this.date_range.max.day)
+        this.from_year_box.val(this.date_range.min.year)
+        this.from_month_box.val(this.date_range.min.month)
+        this.from_day_box.val(this.date_range.min.day)
+        this.to_year_box.val(this.date_range.max.year)
+        this.to_month_box.val(this.date_range.max.month)
+        this.to_day_box.val(this.date_range.max.day)
     }
 
     build_excerpts(fragments, highlights) {
@@ -1340,32 +1349,18 @@ class SearchResultsViewer {
                             let matter_excerpt = ""
                             let footnote_excerpt = ""
                             let full_excerpt = ""
-                            let highlight = ""
+                            let highlights = []
 
                             if (result.id in sender.frontmatter_volume_map) {
                                 let vol_no = sender.frontmatter_volume_map[result.id]
 
                                 if (result.hasOwnProperty('_search_highlights')) {
                                     if (result._search_highlights.hasOwnProperty('html')) {
-                                        let excerpt_fragments = result._search_highlights.html.map(frag => {
-                                            if (!highlight) {
-                                                let highlight_match = frag.match(/<em>([^<]*)<\/em>/)
-                                                if (highlight_match) highlight = highlight_match[1]
-                                            }
-                                            return sender.clean_search_highlight(frag)
-                                        })
-                                        matter_excerpt = excerpt_fragments.join(' ... ')
+                                        matter_excerpt = sender.build_excerpts(result._search_highlights.html, highlights)
                                     }
 
                                     if (result._search_highlights.hasOwnProperty('footnotes')) {
-                                        let excerpt_fragments = result._search_highlights.footnotes.map(frag => {
-                                            if (!highlight) {
-                                                let highlight_match = frag.match(/<em>([^<]*)<\/em>/)
-                                                if (highlight_match) highlight = highlight_match[1]
-                                            }
-                                            return sender.clean_search_highlight(frag)
-                                        })
-                                        footnote_excerpt = excerpt_fragments.join(' ... ')
+                                        footnote_excerpt = sender.build_excerpts(result._search_highlights.footnotes, highlights)
                                     }
                                 }
 
@@ -1377,7 +1372,7 @@ class SearchResultsViewer {
                                 sender.frontmatter_results_pane.append(`
                                     <div class="clo-search-result" data-id="${result.id}" data-result="${((page - 1) * page_size) + result_index + 1}" data-type="frontmatter">
                                       <div class="clo-search-result-heading">
-                                        <a href="/volume/${vol_no}/${result.slug}${highlight ? `?highlight=${highlight}` : ''}" target="_blank">
+                                        <a href="/volume/${vol_no}/${result.slug}${highlights.length ? `?highlight=${highlights.join('|||')}` : ''}" target="_blank">
                                           ${result.title} (Volume ${vol_no})
                                         </a>
                                       </div>

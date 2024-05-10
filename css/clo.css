@@ -584,6 +584,21 @@ a.footnote.target {
     margin-top: 20px;
 }
 
+#adv-search-dates-apply-button.pulse {
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 #adv-search-type-bar {
     display: flex;
     flex-direction: row;
@@ -649,6 +664,7 @@ div.dt-container div.row { margin-bottom: 0; }
 div.dt-container div.dt-search input { margin-left: 0; border: none; border-radius: 0; width: 100%; }
 .dt-container .col-md-auto.mr-auto { display: flex; flex-grow: 1; }
 .dt-search { display: flex; flex-grow: 1; }
+div.dt-container div.dt-scroll-body { -ms-overflow-style: -ms-autohiding-scrollbar; }
 div.dts div.dt-scroll-body table, div.dts div.dataTables_scrollBody table { background: rgba(255, 255, 255, .5); }
 table.dataTable td { padding: 5px; cursor: pointer; text-transform: capitalize; }
 table.dataTable td:hover { color: #21596f; background-color: #9db993; }
