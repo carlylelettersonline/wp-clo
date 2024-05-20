@@ -262,6 +262,7 @@ class VolumeViewer {
         this.doi_toc_map = {}
         this.front_slug_id_map = {}
         this.highlight = null
+        this.dragon = null
 
         // check for url path parameters
         let path_parts = window.location.pathname.split('/')
@@ -569,6 +570,19 @@ class VolumeViewer {
 
                         if (content.hasOwnProperty('page_images') && content.page_images.length) {
                             sender.viewer_element.html(`
+                                ${letter_nav}
+                                <div id="clo-letter-image-helper">
+                                    Scroll down to see the transcription and notes for this letter.
+                                </div>
+                                <div id="clo-letter-image-viewer"></div>
+                                ${content_div}
+                                ${sourcenote_div}
+                                ${footnotes_div}
+                                ${letter_nav}
+                            `)
+
+                            /*
+                            sender.viewer_element.html(`
                                 <div class="row">
                                   <div class="col-sm-8">
                                     <div id="clo-letter-image-viewer"></div>
@@ -583,8 +597,9 @@ class VolumeViewer {
                                   </div>
                                 </div>
                             `)
+                             */
 
-                            let dragon = OpenSeadragon({
+                            sender.dragon = OpenSeadragon({
                                 id:                 "clo-letter-image-viewer",
                                 prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
                                 preserveViewport:   false,
@@ -598,6 +613,14 @@ class VolumeViewer {
                                 sequenceMode: true,
                                 showReferenceStrip: true,
                                 referenceStripScroll: 'horizontal',
+                            })
+
+                            sender.dragon.addHandler('open', function () {
+                                let tiledImage = sender.dragon.world.getItemAt(0)
+                                if (tiledImage.getFullyLoaded())
+                                    sender.show_top_of_letter()
+                                else
+                                    tiledImage.addOnceHandler('fully-loaded-change', function() { sender.show_top_of_letter() })
                             })
 
                         } else {
@@ -630,6 +653,12 @@ class VolumeViewer {
                 }
             }
         )
+    }
+
+    show_top_of_letter() {
+        let top_point = new OpenSeadragon.Point(0,0)
+        this.dragon.viewport.panTo(top_point)
+        this.dragon.viewport.applyConstraints()
     }
 }
 
