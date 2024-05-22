@@ -109,11 +109,20 @@ class CarlyleLettersOnline {
 
     title_case(str) {
         if (str.length > 3) {
-            str = str.toLowerCase().split(' ')
-            for (var i = 0; i < str.length; i++) {
-                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1)
+            let phrase = str.toLowerCase().split(' ')
+            console.log(phrase)
+            for (let word_index = 0; word_index < phrase.length; word_index++) {
+                if (phrase[word_index].length > 3) {
+                    phrase[word_index] = phrase[word_index].charAt(0).toUpperCase() + phrase[word_index].slice(1)
+                } else if (!['and', 'the'].includes(phrase[word_index])) {
+                    let new_word = ''
+                    for (let char_index = 0; char_index < phrase[word_index].length; char_index++) {
+                        new_word += phrase[word_index][char_index].toUpperCase()
+                    }
+                    phrase[word_index] = new_word
+                }
             }
-            return str.join(' ')
+            return phrase.join(' ')
         }
         return str
     }
