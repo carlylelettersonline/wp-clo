@@ -784,7 +784,7 @@ class AlbumViewer {
                          data-photo_no="${index}"
                     >
                   </div>
-                  ${photo.title}
+                  <div style="max-width: ${sender.max_photo_width}px;">${photo.description}</div>
                 </div>
               </div>
             `
