@@ -590,24 +590,6 @@ class VolumeViewer {
                                 ${letter_nav}
                             `)
 
-                            /*
-                            sender.viewer_element.html(`
-                                <div class="row">
-                                  <div class="col-sm-8">
-                                    <div id="clo-letter-image-viewer"></div>
-                                  </div>
-                                  
-                                  <div class="col-sm-4">
-                                    ${letter_nav}
-                                    ${content_div}
-                                    ${sourcenote_div}
-                                    ${footnotes_div}
-                                    ${letter_nav}
-                                  </div>
-                                </div>
-                            `)
-                             */
-
                             sender.dragon = OpenSeadragon({
                                 id:                 "clo-letter-image-viewer",
                                 prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
@@ -615,7 +597,7 @@ class VolumeViewer {
                                 visibilityRatio:    1,
                                 minZoomLevel:       .25,
                                 maxZoomLevel:       5,
-                                defaultZoomLevel:   1,
+                                defaultZoomLevel:   0,
                                 homeFillsViewer:    true,
                                 showRotationControl: true,
                                 tileSources:   [content.page_images],
