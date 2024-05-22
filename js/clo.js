@@ -1051,18 +1051,7 @@ class SearchResultsViewer {
             })
 
             sender.clear_filters_button.click(function() {
-                sender.content_checkboxes.prop('checked', true)
-                sender.date_range.apply = false
-                sender.from_year_box.val('')
-                sender.from_month_box.val('')
-                sender.from_day_box.val('')
-                sender.to_year_box.val('')
-                sender.to_month_box.val('')
-                sender.to_day_box.val('')
-                delete sender.criteria.letters['f_sender.id']
-                delete sender.criteria.letters['f_recipient.id']
-                jQuery('table.filtered').removeClass('filtered')
-                sender.render_result_page('letters', true)
+                window.location.href = '/search-results/'
             })
 
             sender.sort_box.change(function() {
