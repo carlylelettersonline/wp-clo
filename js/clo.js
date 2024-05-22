@@ -626,7 +626,7 @@ class VolumeViewer {
                     }
 
                     if (sender.highlight) {
-                        let highlights = sender.highlight.split('|||')
+                        let highlights = sender.highlight.split('__')
                         highlights.forEach(highlight => {
                             jQuery('#clo-letter-content-div').mark(highlight, {className: `clo-letter-highlight`})
                             let footnotes_div = jQuery('#clo-letter-footnotes-div')
@@ -1331,7 +1331,7 @@ class SearchResultsViewer {
                             sender.letter_results_pane.append(`
                                 <div class="clo-search-result" data-result="${((page - 1) * page_size) + result_index + 1}" data-type="letters">
                                   <div class="clo-search-result-heading">
-                                    <a href="/volume/${result.vol_no}/${result.doi}${highlights.length ? `?highlight=${highlights.join('|||')}` : ''}" target="_blank">
+                                    <a href="/volume/${result.vol_no}/${result.doi}${highlights.length ? `?highlight=${highlights.join('__')}` : ''}" target="_blank">
                                       From ${result.sender.label} to ${result.recipient.label} on ${result.date_label}
                                     </a>
                                   </div>
