@@ -1118,45 +1118,59 @@ class SearchResultsViewer {
     }
 
     build_criteria() {
+        // remove existing criteria
+        let param_prefixes = ['1_', 't_', 'p_', 'q']
+
+        for (let crit in this.criteria) {
+            let params = Object.keys(this.criteria[crit]).map(k => k)
+            params.forEach(p => {
+                param_prefixes.forEach(prefix => {
+                    if (p.startsWith(prefix)) {
+                        delete this.criteria[crit][p]
+                    }
+                })
+            })
+        }
+
+        // handle query string if it exists
         if (this.search_box.val()) {
             let q = this.search_box.val()
             let letter_contents = []
-            let param_prefixes = ['1_', 't_', 'p_', 'q']
-
-            // remove existing criteria
-            for (let crit in this.criteria) {
-                let params = Object.keys(this.criteria[crit]).map(k => k)
-                params.forEach(p => {
-                    param_prefixes.forEach(prefix => {
-                        if (p.startsWith(prefix)) {
-                            delete this.criteria[crit][p]
-                        }
-                    })
-                })
-            }
 
             // see which letter fields are enabled
             jQuery('.adv-search-content-checkbox').each(function() {
                 let content_box = jQuery(this)
                 if (content_box.is(':checked')) letter_contents.push(content_box.data('field'))
             })
-            // if all letter fields enabled, use general query
-            if (letter_contents.length === 3) {
-                Object.assign(this.criteria.letters, {
-                    q: q
-                })
-            // else, query desired fields individually
-            } else {
-                let group_prefix = ''
-                if (letter_contents.length > 1) {
-                    this.criteria.letters['1_operator'] = 'or'
-                    group_prefix = '1_'
-                }
-                letter_contents.forEach(field => {
-                    this.criteria.letters[`${group_prefix}t_${field}`] = q
-                    this.criteria.letters[`${group_prefix}p_${field}`] = q
-                })
+
+            // determine boolean mode
+            let is_exact = /"[^"]*"/.test(q)
+            let has_or = q.toLowerCase().includes(' or ')
+            let has_and = q.toLowerCase().includes(' and ')
+            let query_string = q
+            let local_operator = ''
+
+            if (!is_exact && has_and) {
+                let and_parts = q.trim().split(' and ')
+                query_string = and_parts.join('__')
+                local_operator = '+'
+            } else if (!is_exact && has_or) {
+                let or_parts = q.trim().split(' or ')
+                query_string = or_parts.join('__')
+                local_operator = '|'
             }
+
+            // set up the query parameters accordingly
+            this.criteria.letters['es_debug_query'] = 'y'
+            this.criteria.letters['1_operator'] = 'or'
+            let group_num = 1
+
+            letter_contents.forEach(field => {
+                this.criteria.letters[`1_${group_num}_t_${field}${local_operator}`] = query_string
+                group_num += 1
+                this.criteria.letters[`1_${group_num}_p_${field}${local_operator}`] = query_string
+                group_num += 1
+            })
 
             // use general query for frontmatter and photos
             Object.assign(this.criteria.frontmatter, {
