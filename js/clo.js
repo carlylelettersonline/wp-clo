@@ -1197,7 +1197,8 @@ class SearchResultsViewer {
             else if (a[0] > b[0]) return 1
             return 0
         })
-        people = people.map(p => [this.clo.title_case(p[0]), p[1]])
+        //people = people.map(p => [this.clo.title_case(p[0]), p[1]])
+        people = people.map(p => [p[0], p[1]])
         table.clear()
         table.rows.add(people).draw()
         jQuery('.dt-scroll-body').each(function() {
