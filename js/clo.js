@@ -777,7 +777,6 @@ class AlbumViewer {
               <div class="clo-album-cell">
                 <div class="clo-album-cell-matte">
                   <div class="clo-album-cell-inner">
-                    <div class="clo-album-tooltiptext" tabindex="${index}">${photo.title}</div>
                     <img id="clo-album-photo-${photo.id}"
                          class="clo-album-photo clo-album-photo-placeholder"
                          src="/wp-content/plugins/clo/img/placeholder-image.jpeg"
@@ -785,6 +784,7 @@ class AlbumViewer {
                          data-photo_no="${index}"
                     >
                   </div>
+                  ${photo.title}
                 </div>
               </div>
             `
