@@ -392,6 +392,12 @@ span.rend-small-caps {
     margin-bottom: 1rem;
 }
 
+img.clo-figure {
+    max-width: 80%;
+    display: block;
+    margin: 20px auto 20px auto;
+}
+
 sup.footnote.origin {
     color: #007bff;
     font-size: 14px;
@@ -449,9 +455,12 @@ a.footnote.target {
 
 .clo-album-cell-matte {
     background: #f5ecdc;
-    /*height: 240px;
-    width: 240px;*/
+    display: flex;
+    flex-direction: column;
     text-align: center;
+    border: 1px solid #ddd!important;
+    border-radius: 4px!important;
+    padding: 5px;
 }
 
 .clo-album-cell-inner {
@@ -475,11 +484,9 @@ a.footnote.target {
 }
 
 .clo-album-photo {
-    border: 1px solid #ddd!important;
-    border-radius: 4px!important;
-    padding: 5px;
     width: auto;
     pointer: cursor;
+    margin-bottom: 5px;
 }
 
 .clo-album-photo-placeholder {
@@ -668,7 +675,7 @@ div.dt-container div.dt-search input { margin-left: 0; border: none; border-radi
 .dt-search { display: flex; flex-grow: 1; }
 div.dt-container div.dt-scroll-body { -ms-overflow-style: -ms-autohiding-scrollbar; }
 div.dts div.dt-scroll-body table, div.dts div.dataTables_scrollBody table { background: rgba(255, 255, 255, .5); }
-table.dataTable td { padding: 5px; cursor: pointer; text-transform: capitalize; }
+table.dataTable td { padding: 5px; cursor: pointer; }
 table.dataTable td:hover { color: #21596f; background-color: #9db993; }
 table.dataTable.filtered td { color: #21596f; background-color: #9db993; }
 table.dataTable.filtered td::after {
