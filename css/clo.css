@@ -393,7 +393,7 @@ span.rend-small-caps {
 }
 
 img.clo-figure {
-    max-width: 80%;
+    max-width: 80%!important;
     display: block;
     margin: 20px auto 20px auto;
 }
