@@ -1,0 +1,119 @@
+<div id="adv-search-bar">
+  <input id="adv-search-box" type="text" placeholder="Search" autofocus />
+  <button id="adv-search-button" type="button">Search</button>
+</div>
+
+<div id="adv-search-filter-and-results">
+  <div id="adv-search-filter">
+    <h2>Filter By:</h2>
+
+    <!-- CONTENT FILTER -->
+    <details id="adv-search-content-filter-container">
+      <summary>Content</summary>
+      <span><input id="adv-search-content-body" type="checkbox" class="adv-search-content-checkbox" data-field="html" checked> <label for="adv-search-content-letters">Letter Body</label></span>
+      <span><input id="adv-search-content-footnotes" type="checkbox" class="adv-search-content-checkbox" data-field="footnotes" checked> <label for="adv-search-content-footnotes">Footnotes</label></span>
+      <span><input id="adv-search-content-sourcenotes" type="checkbox" class="adv-search-content-checkbox" data-field="sourcenote" checked> <label for="adv-search-content-sourcenotes">Source Notes</label></span>
+    </details>
+
+    <!-- DATE FILTER -->
+    <details>
+      <summary>Dates</summary>
+      <label class="metadata-label">Date From</label>
+      <div class="adv-date-search-bar">
+        <input id="adv-search-date-from-year-box" class="date-box year" placeholder="1791" max="2000" type="number" />
+        <input id="adv-search-date-from-month-box" class="date-box month" placeholder="12" max="12" type="number" />
+        <input id="adv-search-date-from-day-box" class="date-box day" placeholder="7" max="31" type="number" />
+      </div>
+
+      <label class="metadata-label">Date To</label>
+      <div class="adv-date-search-bar">
+        <input id="adv-search-date-to-year-box" class="date-box year" placeholder="1848" max="2000" type="number" />
+        <input id="adv-search-date-to-month-box" class="date-box month" placeholder="7" max="12" type="number" />
+        <input id="adv-search-date-to-day-box" class="date-box day" placeholder="1" max="31" type="number" />
+      </div>
+
+      <button type="button" id="adv-search-dates-apply-button">Apply Dates</button>
+    </details>
+
+    <!-- PEOPLE FILTER -->
+    <details id="adv-search-people-filter-container">
+      <summary>People</summary>
+      <div>
+        <label for="adv-search-sender-table">Sender</label>
+        <table id="adv-search-sender-table" class="adv-search-filter-table"></table>
+      </div>
+      <div>
+        <label for="adv-search-recipient-table">Recipient</label>
+        <table id="adv-search-recipient-table" class="adv-search-filter-table"></table>
+      </div>
+    </details>
+
+    <button type="button" id="adv-search-clear-filter-button">Reset Search</button>
+  </div>
+  <div id="adv-search-results-container">
+    <!-- SEARCH RESULT TABS -->
+    <ul id="adv-search-results-tabs" class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="adv-search-results-letters-tab" data-toggle="tab" data-target="#adv-search-results-letters-pane" type="button" role="tab" aria-controls="adv-search-results-letters-pane" aria-selected="true">
+          Letters (<span class="adv-search-letters-total-results"></span>)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="adv-search-results-frontmatter-tab" data-toggle="tab" data-target="#adv-search-results-frontmatter-pane" type="button" role="tab" aria-controls="adv-search-results-frontmatter-pane" aria-selected="true">
+          Front Matter (<span class="adv-search-frontmatter-total-results"></span>)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="adv-search-results-photos-tab" data-toggle="tab" data-target="#adv-search-results-photos-pane" type="button" role="tab" aria-controls="adv-search-results-photos-pane" aria-selected="true">
+          Photos (<span class="adv-search-photos-total-results"></span>)
+        </button>
+      </li>
+    </ul>
+
+    <!-- LETTERS PANE -->
+    <div class="tab-pane fade show active" id="adv-search-results-letters-pane" role="tabpanel" aria-labelledby="adv-search-results-letters-tab">
+      <div id="adv-search-letters-results-meta-bar">
+        <select id="adv-search-letters-sort-box">
+          <option value="rel">Sort By: Relevance</option>
+          <option value="asc">Sort By: Date (earliest first)</option>
+          <option value="desc">Sort By: Date (latest first)</option>
+        </select>
+
+        <span id="adv-search-letters-count-bar">
+          Scrolling through <span id="adv-search-letters-current-result">1</span> out of <span class="adv-search-letters-total-results"></span> letters
+        </span>
+      </div>
+
+      <div id="adv-search-letter-results" class="scrollable-results-pane">
+
+      </div>
+    </div>
+
+    <!-- FRONT MATTER PANE -->
+    <div class="tab-pane fade" id="adv-search-results-frontmatter-pane" role="tabpanel" aria-labelledby="adv-search-results-frontmatter-tab">
+      <div id="adv-search-frontmatter-results-meta-bar">
+        <span id="adv-search-frontmatter-count-bar">
+          Showing <span id="adv-search-frontmatter-current-result">1</span> out of <span class="adv-search-frontmatter-total-results"></span>
+        </span>
+      </div>
+
+      <div id="adv-search-frontmatter-results" class="scrollable-results-pane">
+
+      </div>
+    </div>
+
+    <!-- PHOTOS PANE -->
+    <div class="tab-pane fade" id="adv-search-results-photos-pane" role="tabpanel" aria-labelledby="adv-search-results-photos-tab">
+      <div id="adv-search-photos-results-meta-bar">
+        <span id="adv-search-photos-count-bar">
+          <span class="adv-search-photos-total-results"></span> results
+        </span>
+      </div>
+
+      <div id="adv-search-photo-results" class="scrollable-results-pane">
+
+      </div>
+    </div>
+  </div>
+</div>
+

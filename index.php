@@ -47,6 +47,7 @@
 		wp_enqueue_script('clo-tippy', plugin_dir_url(__FILE__).'js/tippy-bundle.umd.min.js', array('clo-popper'));
 		wp_enqueue_script('clo-autocomplete', plugin_dir_url(__FILE__).'js/autoComplete.min.js');
 		wp_enqueue_script('clo-openseadragon', plugin_dir_url(__FILE__).'js/openseadragon/openseadragon.min.js');
+		wp_enqueue_script('clo-datatables', plugin_dir_url(__FILE__).'js/datatables.min.js');
 		wp_enqueue_script(
 		    'clo-script',
 		    plugin_dir_url( __FILE__ ).'js/clo.js',
@@ -63,6 +64,7 @@
 		// Register CSS
 		wp_enqueue_style('jquery-ui-css', plugin_dir_url( __FILE__ ).'css/jquery-ui.min.css');
 		wp_enqueue_style('clo-autocomplete-css', plugin_dir_url( __FILE__ ).'css/autoComplete.min.css');
+		wp_enqueue_style('clo-datatables-css', plugin_dir_url( __FILE__ ).'css/datatables.min.css');
 		wp_enqueue_style('clo-css', plugin_dir_url( __FILE__ ).'css/clo.css');
 	}
 
@@ -79,10 +81,11 @@
 ?>
 		<script>
 		    let clo = null;
+		    let plugin_url = "<?php echo plugin_dir_url( __FILE__ ); ?>"
 
 			jQuery(document).ready(function($)
 			{
-				clo = new CarlyleLettersOnline('<?=$corpora_host?>', '<?=$corpora_token?>', '<?=$corpus_id?>');
+				clo = new CarlyleLettersOnline('<?=$corpora_host?>', '<?=$corpora_token?>', '<?=$corpus_id?>', plugin_url);
 			});
 		</script>	
 <?php		
