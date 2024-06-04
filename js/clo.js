@@ -329,12 +329,14 @@ class VolumeViewer {
                                 vol.letters.map(letter => {
                                     let month_label = "Undated"
                                     let letter_label = `<span class="clo-vol-letter-link-date">${letter.label}</span><br />`
+                                    let link_spacer_css = ''
 
                                     if (letter.date) {
                                         let d = new Date(Date.parse(letter.date))
                                         month_label = `${month_names[d.getMonth()]} ${d.getFullYear()}`
                                     } else {
                                         letter_label = ''
+                                        link_spacer_css = ' style="margin-top: 6px;"'
                                     }
 
                                     if (month_label !== last_month) {
@@ -346,7 +348,7 @@ class VolumeViewer {
                                     }
 
                                     letters += `
-                                        <div class="clo-vol-letter-link-div">
+                                        <div class="clo-vol-letter-link-div"${link_spacer_css}>
                                             <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}" data-doi="${letter.doi}">
                                                 ${letter_label}
                                                 <span class="clo-vol-letter-link-desc">${letter.description}</span>
