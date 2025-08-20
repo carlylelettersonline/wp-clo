@@ -31,13 +31,13 @@ class CarlyleLettersOnline {
                             }
                         }
                     })
-                })
+                }, true)
         }
 
         // rig up the site footer
         let clo_site_footer_div = jQuery('#clo-footer-div')
         if (clo_site_footer_div.length) {
-            this.load_template(clo_site_footer_div, 'footer.html')
+            this.load_template(clo_site_footer_div, 'footer.html', null, true)
         }
 
         // rig up homepage widget
@@ -327,36 +327,44 @@ class VolumeViewer {
                                 let last_month = ''
 
                                 vol.letters.map(letter => {
+                                    let month_label = "Undated"
+                                    let letter_label = `<span class="clo-vol-letter-link-date">${letter.label}</span><br />`
+                                    let link_spacer_css = ''
+
                                     if (letter.date) {
                                         let d = new Date(Date.parse(letter.date))
-                                        let month_label = `${month_names[d.getMonth()]} ${d.getFullYear()}`
-
-                                        if (month_label !== last_month) {
-                                            if (last_month) {
-                                                letters += '</details>'
-                                            }
-                                            letters += `<details id="clo-vol-toc-${month_label.replace(' ', '')}" class="clo-vol-toc-date"><summary>${month_label}</summary>`
-                                            last_month = month_label
-                                        }
-
-                                        letters += `
-                                            <div class="clo-vol-letter-link-div">
-                                                <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}" data-doi="${letter.doi}">
-                                                    <span class="clo-vol-letter-link-date">${letter.label}</span><br />
-                                                    <span class="clo-vol-letter-link-desc">${letter.description}</span>
-                                                </a>
-                                            </div>
-                                        `
-
-                                        sender.all_letter_dois.push(letter.doi)
-                                        sender.doi_toc_map[letter.doi] = `clo-vol-toc-${month_label.replace(' ', '')}`
+                                        month_label = `${month_names[d.getMonth()]} ${d.getFullYear()}`
+                                    } else {
+                                        letter_label = ''
+                                        link_spacer_css = ' style="margin-top: 6px;"'
                                     }
+
+                                    if (month_label !== last_month) {
+                                        if (last_month) {
+                                            letters += '</details>'
+                                        }
+                                        letters += `<details id="clo-vol-toc-${month_label.replace(' ', '')}" class="clo-vol-toc-date"><summary>${month_label}</summary>`
+                                        last_month = month_label
+                                    }
+
+                                    letters += `
+                                        <div class="clo-vol-letter-link-div"${link_spacer_css}>
+                                            <a class="clo-vol-letter-link clo-vol-nav-link" data-text-type="Letter" data-id="${letter.id}" data-doi="${letter.doi}">
+                                                ${letter_label}
+                                                <span class="clo-vol-letter-link-desc">${letter.description}</span>
+                                            </a>
+                                        </div>
+                                    `
+
+                                    sender.all_letter_dois.push(letter.doi)
+                                    sender.doi_toc_map[letter.doi] = `clo-vol-toc-${month_label.replace(' ', '')}`
+
                                 })
                                 letters += `</details></details>`
 
                                 sender.nav_element.append(`
                                     <div id="clo-vol-info" class="orange-border-bottom">
-                                      ${vol.label}<br />${vol.description}
+                                      ${sender.volume === 0 ? '' : `${vol.label}<br />`}${vol.description}
                                     </div>
                                     <div id="clo-vol-nav">
                                       <a id="clo-vol-prev" class="mr-auto vol-nav-link" data-direction="prev">PREV VOLUME</a>
@@ -592,7 +600,7 @@ class VolumeViewer {
 
                             sender.dragon = OpenSeadragon({
                                 id:                 "clo-letter-image-viewer",
-                                prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
+                                prefixUrl:          `${sender.clo.plugin_url}js/openseadragon/images/`,
                                 preserveViewport:   false,
                                 visibilityRatio:    1,
                                 minZoomLevel:       .25,
@@ -779,7 +787,7 @@ class AlbumViewer {
                   <div class="clo-album-cell-inner">
                     <img id="clo-album-photo-${photo.id}"
                          class="clo-album-photo clo-album-photo-placeholder"
-                         src="/wp-content/plugins/clo/img/placeholder-image.jpeg"
+                         src="${sender.clo.plugin_url}img/placeholder-image.jpeg"
                          data-iiif_url="${photo.iiif_url}"
                          data-photo_no="${index}"
                     >
@@ -864,11 +872,12 @@ class AlbumViewer {
         setTimeout(() => {photo_modal_footer[0].scrollTop = 0}, 1000)
         photo_modal_image.empty()
 
+        let sender = this
         photo_modal.off('shown.bs.modal').on('shown.bs.modal', function() {
             photo_modal_image.css('height', `${photo_modal_body.height() - 10}px`)
             OpenSeadragon({
                 id:                 "clo-album-feature-image",
-                prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
+                prefixUrl:          `${sender.clo.plugin_url}js/openseadragon/images/`,
                 preserveViewport:   false,
                 visibilityRatio:    1,
                 minZoomLevel:       .25,

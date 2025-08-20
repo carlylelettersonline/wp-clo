@@ -40,6 +40,13 @@
 
 	function clo_corpora_enqueue_scripts()
 	{
+	    // Get plugin version for cache busting
+        if (!function_exists('get_plugin_data')) {
+            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        $plugin_data = get_plugin_data(__FILE__);
+        $plugin_version = $plugin_data['Version'];
+
 		// Register Javascript
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-mark', plugin_dir_url(__FILE__).'js/jquery.mark.min.js');
@@ -58,14 +65,15 @@
 		        'clo-tippy',
 		        'clo-autocomplete',
 		        'clo-openseadragon'
-            )
+            ),
+            $plugin_version
         ); //your javascript library
 
 		// Register CSS
 		wp_enqueue_style('jquery-ui-css', plugin_dir_url( __FILE__ ).'css/jquery-ui.min.css');
 		wp_enqueue_style('clo-autocomplete-css', plugin_dir_url( __FILE__ ).'css/autoComplete.min.css');
 		wp_enqueue_style('clo-datatables-css', plugin_dir_url( __FILE__ ).'css/datatables.min.css');
-		wp_enqueue_style('clo-css', plugin_dir_url( __FILE__ ).'css/clo.css');
+		wp_enqueue_style('clo-css', plugin_dir_url( __FILE__ ).'css/clo.css', $plugin_version);
 	}
 
 	function clo_corpora_inject_footer()
