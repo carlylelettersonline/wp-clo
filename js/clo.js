@@ -31,13 +31,13 @@ class CarlyleLettersOnline {
                             }
                         }
                     })
-                })
+                }, true)
         }
 
         // rig up the site footer
         let clo_site_footer_div = jQuery('#clo-footer-div')
         if (clo_site_footer_div.length) {
-            this.load_template(clo_site_footer_div, 'footer.html')
+            this.load_template(clo_site_footer_div, 'footer.html', null, true)
         }
 
         // rig up homepage widget
@@ -600,7 +600,7 @@ class VolumeViewer {
 
                             sender.dragon = OpenSeadragon({
                                 id:                 "clo-letter-image-viewer",
-                                prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
+                                prefixUrl:          `${sender.clo.plugin_url}js/openseadragon/images/`,
                                 preserveViewport:   false,
                                 visibilityRatio:    1,
                                 minZoomLevel:       .25,
@@ -787,7 +787,7 @@ class AlbumViewer {
                   <div class="clo-album-cell-inner">
                     <img id="clo-album-photo-${photo.id}"
                          class="clo-album-photo clo-album-photo-placeholder"
-                         src="/wp-content/plugins/clo/img/placeholder-image.jpeg"
+                         src="${sender.clo.plugin_url}img/placeholder-image.jpeg"
                          data-iiif_url="${photo.iiif_url}"
                          data-photo_no="${index}"
                     >
@@ -872,11 +872,12 @@ class AlbumViewer {
         setTimeout(() => {photo_modal_footer[0].scrollTop = 0}, 1000)
         photo_modal_image.empty()
 
+        let sender = this
         photo_modal.off('shown.bs.modal').on('shown.bs.modal', function() {
             photo_modal_image.css('height', `${photo_modal_body.height() - 10}px`)
             OpenSeadragon({
                 id:                 "clo-album-feature-image",
-                prefixUrl:          "/wp-content/plugins/clo/js/openseadragon/images/",
+                prefixUrl:          `${sender.clo.plugin_url}js/openseadragon/images/`,
                 preserveViewport:   false,
                 visibilityRatio:    1,
                 minZoomLevel:       .25,
