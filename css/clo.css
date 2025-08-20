@@ -24,6 +24,7 @@ a:hover {
     background-size: auto;
     display: flex;
     flex-direction: column;
+    gap: 0;
 }
 
 #clo-header-image {
@@ -50,6 +51,14 @@ a:hover {
 
 #clo-nav-links-div a:hover, #clo-nav-links-div button:hover {
     color: #a59657!important;
+}
+
+.clo-boxed-block {
+    max-width: 1140px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 20px;
+    gap: 0;
 }
 
 @media screen and (min-width: 1601px) {
