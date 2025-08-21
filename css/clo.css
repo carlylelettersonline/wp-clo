@@ -14,8 +14,23 @@ body {
     background-position: 50% 130px;
 }
 
+a {
+    color: #C17953;
+}
+
 a:hover {
     color: #a59657!important;
+}
+
+figure {
+    background: #f1f1f1 none repeat scroll 0 0;
+    border: 1px solid #f0f0f0;
+    max-width: 96%;
+    padding: 0.313rem 0.313rem 0;
+    text-align: center;
+}
+figure > figcaption {
+    font-size: 18px;
 }
 
 #clo-header-div {
@@ -164,6 +179,7 @@ summary {
     font-size: 16px;
     font-weight: 700;
     color: #c17953!important;
+    list-style: none;
 }
 
 summary:hover {
