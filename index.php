@@ -73,7 +73,7 @@
 		wp_enqueue_style('jquery-ui-css', plugin_dir_url( __FILE__ ).'css/jquery-ui.min.css');
 		wp_enqueue_style('clo-autocomplete-css', plugin_dir_url( __FILE__ ).'css/autoComplete.min.css');
 		wp_enqueue_style('clo-datatables-css', plugin_dir_url( __FILE__ ).'css/datatables.min.css');
-		wp_enqueue_style('clo-css', plugin_dir_url( __FILE__ ).'css/clo.css', $plugin_version);
+		wp_enqueue_style('clo-css', plugin_dir_url( __FILE__ ).'css/clo.css', array(), $plugin_version);
 	}
 
 	function clo_corpora_inject_footer()
