@@ -15,11 +15,11 @@ body {
 }
 
 a {
-    color: #C17953;
+    color: #C17953 !important;
 }
 
 a:hover {
-    color: #a59657!important;
+    color: #a59657 !important;
 }
 
 figure {
@@ -66,6 +66,10 @@ figure > figcaption {
 
 #clo-nav-links-div a:hover, #clo-nav-links-div button:hover {
     color: #a59657!important;
+}
+
+.dropdown-item:focus, .dropdown-item:hover, .dropdown-item.active, .dropdown-item:active {
+    background-color: unset !important;
 }
 
 .clo-boxed-block {
