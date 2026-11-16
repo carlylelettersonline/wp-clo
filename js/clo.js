@@ -217,7 +217,6 @@ class VolumeBatch {
             'GET',
             {'s_order': 'asc', 'page-size': 50},
             function (data) {
-                console.log(data);
                 if (data.hasOwnProperty('records')) {
                     let html_template = (batches) => {
                         return `
