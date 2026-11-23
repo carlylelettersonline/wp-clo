@@ -230,6 +230,7 @@ class VolumeBatch {
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">${batches[4]}</div>
+                                <div class="col-sm-6">${batches[5]}</div>
                             </div>
                         `
                     }
